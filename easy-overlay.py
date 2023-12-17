@@ -5,7 +5,9 @@
 exe_name = "NohBoard.exe" # capitilization doesnt matter
 target_fps = 60 # how often the original window is polled
 scaling = 1.0 # relative to original window size
-transparent = (0, 255, 0) # RGB
+pos_x = 0 # in pixels
+pos_y = 0 # in pixels
+transparent = (25, 255, 0) # RGB
 
 #######################################
 #            END OF CONFIG            #
@@ -80,6 +82,12 @@ def set_transparent(hwnd):
     colorref = rgb_to_colorref(transparent)
     ctypes.windll.user32.SetLayeredWindowAttributes(hwnd, colorref, 0, win32con.LWA_COLORKEY)
     win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, 0, 0, 0, 0, win32con.SWP_NOACTIVATE | win32con.SWP_NOSIZE)
+    
+def set_pos(hwnd, x, y):
+    SWP_NOSIZE = 0x0001
+    ret = win32gui.SetWindowPos(hwnd, win32con.HWND_TOPMOST, x, y, 0, 0, win32con.SWP_NOACTIVATE | win32con.SWP_NOSIZE)
+    if (ret == 0):
+        print("unable to set window position")
                
 
 class WindowCapture:
@@ -137,9 +145,11 @@ if __name__ == "__main__":
     clock = pygame.time.Clock()
 
     set_transparent(pygame.display.get_wm_info()["window"])
+
     last_width = width
     last_height = height
     while True:
+        set_pos(pygame.display.get_wm_info()["window"], pos_x, pos_y)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
